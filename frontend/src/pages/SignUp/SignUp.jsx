@@ -47,7 +47,7 @@ const SignUp = () => {
     setErrorPass(null);
     setErrorConfirmPass(null);
 
-    // Add sign-up logic here
+    // SignUp API call
   };
 
   return (
