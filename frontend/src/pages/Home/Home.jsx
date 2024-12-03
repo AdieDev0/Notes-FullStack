@@ -5,12 +5,21 @@ import { MdOutlineAdd } from "react-icons/md";
 import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
 
+// Set app element for accessibility
+Modal.setAppElement("#root");
+
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
   });
+
+  const customModalStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+  };
 
   return (
     <>
@@ -23,19 +32,19 @@ const Home = () => {
             content="Meeting on 21st December Meeting on 21st December"
             tags="#Meeting"
             isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
+            onEdit={() => console.log("Edit Note clicked")}
+            onDelete={() => console.log("Delete Note clicked")}
+            onPinNote={() => console.log("Pin Note clicked")}
           />
         </div>
       </div>
 
       <button
-        className="w-16 h-16 flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 fixed right-6 bottom-6 rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-400"
+        className="w-16 h-16 flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 fixed right-6 bottom-6 rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         aria-label="Add Note"
-        onClick={() => {
-          setOpenAddEditModal({ isShown: true, type: "add", data: null });
-        }}
+        onClick={() =>
+          setOpenAddEditModal({ isShown: true, type: "add", data: null })
+        }
       >
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
@@ -45,19 +54,27 @@ const Home = () => {
         onRequestClose={() =>
           setOpenAddEditModal({ ...openAddEditModal, isShown: false })
         }
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-        }}
-        contentLabel=""
+        style={customModalStyles}
+        contentLabel={
+          openAddEditModal.type === "add" ? "Add Note" : "Edit Note"
+        }
         className="w-full max-w-lg bg-white rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
       >
-        <div className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer text-lg" 
-             onClick={() => setOpenAddEditModal({ ...openAddEditModal, isShown: false })}>
+        <div
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
+          onClick={() =>
+            setOpenAddEditModal({ ...openAddEditModal, isShown: false })
+          }
+        >
           &times;
         </div>
-        <AddEditNotes />
+        <AddEditNotes
+          type={openAddEditModal.type}
+          noteData={openAddEditModal.data}
+          onClose={() =>
+            setOpenAddEditModal({ isShown: false, type: "add", data: null })
+          }
+        />
       </Modal>
     </>
   );
