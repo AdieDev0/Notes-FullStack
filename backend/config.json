@@ -1,3 +1,3 @@
 {
-    "connectionString": ""
+    "connectionString": "mongodb+srv://login:UtellaAdobo@adie.fy9ntbq.mongodb.net/?retryWrites=true&w=majority&appName=adie"
 }
