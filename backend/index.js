@@ -12,6 +12,7 @@ const User = require("./models/user.model");
 const Note = require("./models/note.model");
 
 app.use(express.json());
+
 // MongoDB connection
 mongoose
   .connect(config.connectionString, {
@@ -187,7 +188,7 @@ app.post("/login", async (req, res) => {
 });
 
 // ADD NOTES
-app.post("/add-note", authenticateToken, async (req, res) => {
+app.post('/add-note', authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
   const user = req.user;
 
@@ -196,17 +197,15 @@ app.post("/add-note", authenticateToken, async (req, res) => {
   }
 
   if (!content) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Content is required" });
+    return res.status(400).json({ error: true, message: "Content is required" });
   }
-  
+
   try {
     const note = new Note({
       title,
       content,
       tags: tags || [],
-      userId: user.userId, // Ensure userId is from the token payload
+      userId: user.userId, // Make sure the user ID is from the token
     });
 
     await note.save();
@@ -225,8 +224,9 @@ app.post("/add-note", authenticateToken, async (req, res) => {
   }
 });
 
-app.listen(8001, () => {
-  console.log("Server is running on port 8001");
+const PORT = 8001;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 module.exports = app;
