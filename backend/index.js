@@ -7,15 +7,41 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-const User = require("./models/user.model"); // Ensure this model is defined
+const User = require("./models/user.model");
 
 // MongoDB connection
 mongoose
-  .connect(config.connectionString)
-  .then(() => console.log("MongoDB connected"))
+  .connect(config.connectionString, {
+    // No need for useNewUrlParser and useUnifiedTopology anymore
+  })
+  .then(async () => {
+    console.log("MongoDB connected");
+
+    // Ensure unique index on email
+    try {
+      // Check and drop the conflicting index if it exists
+      const existingIndexes = await User.collection.indexes();
+      const indexName = "username_1"; // You can also modify this if you're working with another field
+
+      // Check if the index already exists
+      const existingIndex = existingIndexes.find(
+        (index) => index.name === indexName
+      );
+      if (existingIndex) {
+        console.log(`Index ${indexName} already exists, dropping it...`);
+        await User.collection.dropIndex(indexName);
+      }
+
+      // Create the index with desired specifications
+      await User.createIndexes();
+      console.log("Indexes created/verified");
+    } catch (error) {
+      console.error("Error creating indexes:", error);
+    }
+  })
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
-    process.exit(1); // Exit process if DB connection fails
+    process.exit(1);
   });
 
 app.use(express.json());
@@ -29,48 +55,75 @@ app.get("/", (req, res) => {
 app.post("/create-account", async (req, res) => {
   const { fullName, email, password } = req.body;
 
-  if (!fullName) {
-    return res.status(400).json({ error: true, message: "Full name is required" });
+  // Validate input more strictly
+  if (!fullName || fullName.trim() === "") {
+    return res
+      .status(400)
+      .json({ error: true, message: "Full Name is required" });
   }
 
-  if (!email) {
-    return res.status(400).json({ error: true, message: "Email is required" });
+  if (!email || !email.includes("@")) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Valid Email is required" });
   }
 
-  if (!password) {
-    return res.status(400).json({ error: true, message: "Password is required" });
+  if (!password || password.length < 6) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Password must be at least 6 characters" });
   }
 
   try {
-    // Check if the user already exists based on the email
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(400).json({
+    // Check if user already exists
+    const isUser = await User.findOne({ email });
+    if (isUser) {
+      return res.status(409).json({
         error: true,
         message: "User with this email already exists",
       });
     }
 
-    // Hash password before saving to DB
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ fullName, email, password: hashedPassword });
-    await newUser.save();
-
-    const accessToken = jwt.sign({ id: newUser._id }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "30m",
+    // Create new user
+    const user = new User({
+      fullName,
+      email,
+      password: hashedPassword,
     });
 
+    // Save user
+    await user.save();
+
+    // Generate access token
+    const accessToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "10h" }
+    );
+
     return res.status(201).json({
+      error: false,
       message: "Account created successfully",
       token: accessToken,
     });
   } catch (error) {
-    console.error(error); // Log error for debugging
+    console.error("Error creating account:", error);
+
+    // More detailed error handling
+    if (error.code === 11000) {
+      return res.status(409).json({
+        error: true,
+        message: "A user with this email already exists",
+      });
+    }
+
     return res.status(500).json({
       error: true,
-      message: "Server error",
+      message: "Internal Server Error",
+      details: error.message,
     });
   }
 });
@@ -80,45 +133,52 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+    return res.status(400).json({ error: true, message: "Email is required" });
   }
 
   if (!password) {
-    return res.status(400).json({ message: "Password is required" });
+    return res
+      .status(400)
+      .json({ error: true, message: "Password is required" });
   }
 
   try {
+    // Find user by email
     const userInfo = await User.findOne({ email });
 
     if (!userInfo) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ error: true, message: "User not found" });
     }
 
-    // Compare hashed password
-    const isPasswordValid = await bcrypt.compare(password, userInfo.password);
+    // Compare passwords
+    const isPasswordCorrect = await bcrypt.compare(password, userInfo.password);
 
-    if (isPasswordValid) {
-      const accessToken = jwt.sign({ id: userInfo._id }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "36000m", // Valid for 25 days
-      });
-
-      return res.json({
-        error: false,
-        message: "Login Successful",
-        email,
-        accessToken,
-      });
-    } else {
+    if (!isPasswordCorrect) {
       return res.status(400).json({
         error: true,
         message: "Invalid Credentials",
       });
     }
+
+    // Generate access token
+    const accessToken = jwt.sign(
+      { userId: userInfo._id, email: userInfo.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "10h" }
+    );
+
+    return res.json({
+      error: false,
+      message: "Login Successful",
+      email: userInfo.email,
+      accessToken,
+    });
   } catch (error) {
-    console.error("Error during login:", error.message); // Log error for debugging
+    console.error("Login error:", error);
     return res.status(500).json({
       error: true,
-      message: "Server error: " + error.message, // Return the actual error message
+      message: "Internal Server Error",
+      details: error.message,
     });
   }
 });
