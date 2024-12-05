@@ -1,29 +1,25 @@
 require("dotenv").config();
-
 const config = require("./config.json");
 const mongoose = require("mongoose");
-
-mongoose
-  .connect(config.connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-const User = require("./models/user.model");
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const cors = require("cors");
-const app = express();
 
-const jwt = require("jsonwebtoken");
-const { authenticateToken } = require("./utilities");
+const app = express();
+const User = require("./models/user.model"); // Ensure this model is defined
+
+// MongoDB connection
+mongoose
+  .connect(config.connectionString)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1); // Exit process if DB connection fails
+  });
 
 app.use(express.json());
-
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors({ origin: "*" }));
 
 app.get("/", (req, res) => {
   res.json({ data: "hello" });
@@ -46,16 +42,20 @@ app.post("/create-account", async (req, res) => {
   }
 
   try {
-    const isUser = await User.findOne({ email: email });
+    // Check if the user already exists based on the email
+    const existingUser = await User.findOne({ email });
 
-    if (isUser) {
+    if (existingUser) {
       return res.status(400).json({
         error: true,
-        message: "User already exists",
+        message: "User with this email already exists",
       });
     }
 
-    const newUser = new User({ fullName, email, password });
+    // Hash password before saving to DB
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ fullName, email, password: hashedPassword });
     await newUser.save();
 
     const accessToken = jwt.sign({ id: newUser._id }, process.env.ACCESS_TOKEN_SECRET, {
@@ -67,6 +67,7 @@ app.post("/create-account", async (req, res) => {
       token: accessToken,
     });
   } catch (error) {
+    console.error(error); // Log error for debugging
     return res.status(500).json({
       error: true,
       message: "Server error",
@@ -74,8 +75,56 @@ app.post("/create-account", async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
-  console.log("Server is running on port 8000");
+// LOGIN
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  try {
+    const userInfo = await User.findOne({ email });
+
+    if (!userInfo) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Compare hashed password
+    const isPasswordValid = await bcrypt.compare(password, userInfo.password);
+
+    if (isPasswordValid) {
+      const accessToken = jwt.sign({ id: userInfo._id }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "36000m", // Valid for 25 days
+      });
+
+      return res.json({
+        error: false,
+        message: "Login Successful",
+        email,
+        accessToken,
+      });
+    } else {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid Credentials",
+      });
+    }
+  } catch (error) {
+    console.error("Error during login:", error.message); // Log error for debugging
+    return res.status(500).json({
+      error: true,
+      message: "Server error: " + error.message, // Return the actual error message
+    });
+  }
+});
+
+app.listen(8001, () => {
+  console.log("Server is running on port 8001");
 });
 
 module.exports = app;
