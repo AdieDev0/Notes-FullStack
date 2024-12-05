@@ -7,8 +7,11 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+const authenticateToken = require("./utilities"); // adjust path as needed
 const User = require("./models/user.model");
+const Note = require("./models/note.model");
 
+app.use(express.json());
 // MongoDB connection
 mongoose
   .connect(config.connectionString, {
@@ -175,6 +178,45 @@ app.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+});
+
+// ADD NOTES
+app.post("/add-note", authenticateToken, async (req, res) => {
+  const { title, content, tags } = req.body;
+  const user = req.user;
+
+  if (!title) {
+    return res.status(400).json({ error: true, message: "Title is required" });
+  }
+
+  if (!content) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Content is required" });
+  }
+  
+  try {
+    const note = new Note({
+      title,
+      content,
+      tags: tags || [],
+      userId: user.userId, // Ensure userId is from the token payload
+    });
+
+    await note.save();
+
+    return res.status(201).json({
+      error: false,
+      note,
+      message: "Note added successfully",
+    });
+  } catch (error) {
     return res.status(500).json({
       error: true,
       message: "Internal Server Error",
