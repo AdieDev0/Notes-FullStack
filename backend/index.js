@@ -187,6 +187,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+
 // ADD NOTES
 app.post("/add-note", authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
@@ -353,6 +355,58 @@ app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting note:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+});
+
+// Update isPinned Value
+app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
+  const { noteId } = req.params;
+  const { isPinned } = req.body;
+  const user = req.user;
+
+  // Validate noteId
+  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid note ID",
+    });
+  }
+
+  // Validate isPinned input
+  if (typeof isPinned !== "boolean") {
+    return res.status(400).json({
+      error: true,
+      message: "`isPinned` must be a boolean value",
+    });
+  }
+
+  try {
+    // Find the note by ID and user
+    const note = await Note.findOne({ _id: noteId, userId: user.userId });
+
+    if (!note) {
+      return res.status(404).json({
+        error: true,
+        message: "Note not found",
+      });
+    }
+
+    // Update the isPinned field
+    note.isPinned = isPinned;
+
+    await note.save();
+
+    return res.json({
+      error: false,
+      note,
+      message: "Note updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating note:", error);
     return res.status(500).json({
       error: true,
       message: "Internal Server Error",
