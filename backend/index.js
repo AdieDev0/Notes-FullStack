@@ -275,27 +275,35 @@ app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
 });
 
 // GET ALL NOTES
-app.get("/get-all-notes/:noteId", authenticateToken, async (req, res) => {
-  const noteId = req.params.noteId;
-  const user = req.user; // Directly use req.user
+app.get("/get-all-notes", authenticateToken, async (req, res) => {
+  const user = req.user;
+
+  // Validate user from the token
+  if (!user || !user.userId) {
+    return res.status(401).json({
+      error: true,
+      message: "Unauthorized access",
+    });
+  }
 
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user.userId });
+    // Fetch all notes for the authenticated user
+    const notes = await Note.find({ userId: user.userId });
 
-    if (!note) {
+    if (!notes.length) {
       return res.status(404).json({
         error: true,
-        message: "Note not found",
+        message: "No notes found",
       });
     }
 
     return res.json({
       error: false,
-      note,
-      message: "Note retrieved successfully",
+      notes,
+      message: "Notes retrieved successfully",
     });
   } catch (error) {
-    console.error("Error fetching note:", error);
+    console.error("Error fetching notes:", error);
     return res.status(500).json({
       error: true,
       message: "Internal Server Error",
