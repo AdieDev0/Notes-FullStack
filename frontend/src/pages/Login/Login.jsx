@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance"; // Assuming axiosInstance is imported
+import axiosInstance from "../../utils/axiosInstance";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +18,7 @@ const Login = () => {
   };
 
   const validatePassword = (password) => {
-    return password.length >= 6; // Example: password should be at least 6 characters long
+    return password.length >= 6; // SHOULD AT LEAST 6 CHARACTER BUDDY
   };
 
   const handleLogin = async (e) => {
@@ -35,7 +35,7 @@ const Login = () => {
     }
 
     setError("");
-    setErrorPass(""); // Clear password error
+    setErrorPass(""); // CLEAR PASS ERRRORRRR
 
     // LOGIN API CALL
     try {
