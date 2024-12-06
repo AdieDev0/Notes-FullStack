@@ -1,17 +1,24 @@
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance"; // Assuming axiosInstance is imported
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [errorpass, setErrorPass] = useState(null);
+  const [errorPass, setErrorPass] = useState(null);
+
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6; // Example: password should be at least 6 characters long
   };
 
   const handleLogin = async (e) => {
@@ -22,25 +29,49 @@ const Login = () => {
       return;
     }
 
-    if (!validateEmail(password)) {
-      setErrorPass("Please enter password");
+    if (!validatePassword(password)) {
+      setErrorPass("Password must be at least 6 characters long");
       return;
     }
 
     setError("");
+    setErrorPass(""); // Clear password error
 
-    // Add further login logic here
+    // LOGIN API CALL
+    try {
+      const response = await axiosInstance.post("/login", {
+        email: email,
+        password: password,
+      });
+
+      // Check if response.data contains the accessToken
+      if (response.data && response.data.accessToken) {
+        // Store token in localStorage
+        localStorage.setItem("token", response.data.accessToken);
+
+        // Redirect to dashboard after successful login
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      // Handle login error
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
   };
-  // LOGIN CALL API HERE
+
   return (
     <>
       <Navbar />
-
       <div className="relative flex flex-col justify-center h-[600px] bg-gray-50 overflow-hidden">
         <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg ring-2 ring-slate-900">
-          <h1 className="text-3xl font-bold text-center text-slate-900">
-            Login
-          </h1>
+          <h1 className="text-3xl font-bold text-center text-slate-900">Login</h1>
           <form onSubmit={handleLogin} className="mt-6">
             {/* Email Field */}
             <div className="mb-4">
@@ -79,8 +110,8 @@ const Login = () => {
                 placeholder="Enter your password"
                 className="block w-full px-4 py-2 mt-2 text-slate-700 bg-gray-50 border border-slate-300 rounded-md focus:border-slate-500 focus:ring-slate-500 focus:outline-none"
               />
-              {errorpass && (
-                <p className="text-red-500 text-xs pb-1">{errorpass}</p>
+              {errorPass && (
+                <p className="text-red-500 text-xs pb-1">{errorPass}</p>
               )}
               <button
                 type="button"
@@ -120,13 +151,10 @@ const Login = () => {
           {/* Sign Up */}
           <p className="mt-6 text-sm text-center text-slate-700">
             Don't have an account?{" "}
-            <NavLink to="/singUp">
-              <a
-                href="#"
-                className="font-medium text-slate-900 hover:underline focus:outline-none"
-              >
+            <NavLink to="/signUp">
+              <span className="font-medium text-slate-900 hover:underline focus:outline-none">
                 Sign up
-              </a>
+              </span>
             </NavLink>
           </p>
         </div>
