@@ -188,24 +188,31 @@ app.post("/login", async (req, res) => {
 });
 
 // ADD NOTES
-app.post('/add-note', authenticateToken, async (req, res) => {
+app.post("/add-note", authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
   const user = req.user;
 
-  if (!title) {
-    return res.status(400).json({ error: true, message: "Title is required" });
+  // More robust validation
+  if (!title || title.trim() === '') {
+    return res.status(400).json({ 
+      error: true, 
+      message: "Title is required and cannot be empty" 
+    });
   }
 
-  if (!content) {
-    return res.status(400).json({ error: true, message: "Content is required" });
+  if (!content || content.trim() === '') {
+    return res.status(400).json({ 
+      error: true, 
+      message: "Content is required and cannot be empty" 
+    });
   }
 
   try {
     const note = new Note({
-      title,
-      content,
+      title: title.trim(),
+      content: content.trim(),
       tags: tags || [],
-      userId: user.userId, // Make sure the user ID is from the token
+      userId: user.userId,
     });
 
     await note.save();
@@ -216,10 +223,10 @@ app.post('/add-note', authenticateToken, async (req, res) => {
       message: "Note added successfully",
     });
   } catch (error) {
+    console.error('Note creation error:', error); // Log for debugging
     return res.status(500).json({
       error: true,
-      message: "Internal Server Error",
-      details: error.message,
+      message: "Failed to create note",
     });
   }
 });
