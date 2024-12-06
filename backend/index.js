@@ -311,6 +311,55 @@ app.get("/get-all-notes", authenticateToken, async (req, res) => {
   }
 });
 
+// DELETE NOTES
+app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
+  const { noteId } = req.params;
+
+  // Validate noteId
+  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid note ID",
+    });
+  }
+
+  const user = req.user;
+
+  // Ensure user exists from the authentication middleware
+  if (!user || !user.userId) {
+    return res.status(401).json({
+      error: true,
+      message: "Unauthorized access",
+    });
+  }
+
+  try {
+    // Find the note belonging to the authenticated user
+    const note = await Note.findOne({ _id: noteId, userId: user.userId });
+
+    if (!note) {
+      return res.status(404).json({
+        error: true,
+        message: "Note not found",
+      });
+    }
+
+    // Delete the note
+    await note.deleteOne();
+
+    return res.json({
+      error: false,
+      message: "Note deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 const PORT = 8001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
