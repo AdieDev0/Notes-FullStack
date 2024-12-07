@@ -13,10 +13,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("token");
-    console.log("Token from localStorage:", accessToken);  // Debugging line to check if token is fetched correctly
-    
+
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;  // Attach token in Authorization header
+      config.headers.Authorization = `Bearer ${accessToken}`; // Attach token in Authorization header
     }
     return config;
   },
@@ -27,25 +26,32 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Optional: Response interceptor to handle errors globally (if you want to handle API errors in one place)
+// Response interceptor to handle errors globally
 axiosInstance.interceptors.response.use(
   (response) => {
-    return response; // If no error, just return the response
+    // If the response is successful, just return it
+    return response;
   },
   (error) => {
-    // You can check the response status here, e.g. for token expiration handling
+    // Handle API or network errors
     if (error.response) {
-      // Example: Handle token expiration
-      if (error.response.status === 401) {
-        console.error("Token expired or unauthorized. Please log in again.");
+      const status = error.response.status;
+
+      // Example: Handle token expiration or unauthorized access
+      if (status === 401) {
+        console.error(
+          "Unauthorized or token expired. Clearing token and redirecting..."
+        );
+        localStorage.clear();
+        window.location.href = "/login"; // Redirect to login
       } else {
         console.error("API Error:", error.response.data);
       }
     } else {
-      // Handle network or other types of errors
+      // Handle network errors
       console.error("Network error:", error.message);
     }
-    return Promise.reject(error);  // Propagate the error for further handling
+    return Promise.reject(error); // Propagate the error for further handling
   }
 );
 

@@ -71,7 +71,9 @@ const Login = () => {
       <Navbar />
       <div className="relative flex flex-col justify-center h-[600px] bg-gray-50 overflow-hidden">
         <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg ring-2 ring-slate-900">
-          <h1 className="text-3xl font-bold text-center text-slate-900">Login</h1>
+          <h1 className="text-3xl font-bold text-center text-slate-900">
+            Login
+          </h1>
           <form onSubmit={handleLogin} className="mt-6">
             {/* Email Field */}
             <div className="mb-4">
@@ -151,7 +153,7 @@ const Login = () => {
           {/* Sign Up */}
           <p className="mt-6 text-sm text-center text-slate-700">
             Don't have an account?{" "}
-            <NavLink to="/signUp">
+            <NavLink to="/SignUp">
               <span className="font-medium text-slate-900 hover:underline focus:outline-none">
                 Sign up
               </span>

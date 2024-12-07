@@ -40,6 +40,28 @@ mongoose
       await User.createIndexes();
       console.log("Indexes created/verified");
     } catch (error) {
+      app.get("/get-user", authenticateToken, async (req, res) => {
+        try {
+          const isUser = await User.findById(req.user.userId);
+
+          if (!isUser) {
+            return res.status(401).json({ message: "User not found" });
+          }
+
+          return res.json({
+            user: {
+              fullName: isUser.fullName,
+              email: isUser.email,
+              _id: isUser._id,
+              createdOn: isUser.createdOn,
+            },
+            message: "",
+          });
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
+      });
       console.error("Error creating indexes:", error);
     }
   })
@@ -190,9 +212,7 @@ app.post("/login", async (req, res) => {
 // GET USER
 app.get("/get-user", authenticateToken, async (req, res) => {
   try {
-    const { user } = req; // Extract the user from req after authentication
-
-    const isUser = await User.findOne({ _id: user._id }); // Corrected the typo _ud -> _id
+    const isUser = await User.findById(req.user.userId);
 
     if (!isUser) {
       return res.status(401).json({ message: "User not found" });
@@ -209,11 +229,9 @@ app.get("/get-user", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching user:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
 
 // ADD NOTES
 app.post("/add-note", authenticateToken, async (req, res) => {
