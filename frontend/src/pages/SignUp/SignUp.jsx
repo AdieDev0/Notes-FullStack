@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
-
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,12 +15,14 @@ const SignUp = () => {
   const [error, setError] = useState(null);
   const [errorPass, setErrorPass] = useState(null);
   const [errorConfirmPass, setErrorConfirmPass] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const navigate = useNavigate();
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const validateName = (name) => name.trim().length > 0;
 
-  const navigate = useNavigate()
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
 
     if (!validateName(name)) {
@@ -44,33 +45,34 @@ const SignUp = () => {
       return;
     }
 
-    // Reset errors
+    // Reset errors and success message
     setErrorName(null);
     setError(null);
     setErrorPass(null);
     setErrorConfirmPass(null);
+    setSuccessMessage(null);
 
     // SignUp API call
     try {
       const response = await axiosInstance.post("/create-account", {
-        fullName: name, 
+        fullName: name,
         email: email,
         password: password,
       });
 
-      // Check if response.data contains the accessToken
       if (response.data && response.data.error) {
-        setError(response.data.message)
-        return
+        setError(response.data.message);
+        return;
       }
 
-      if(response.data&& response.data.accessToken)
-      {
-        localStorage.setItem("token", response.data.accessToken)
-        Navigate('/dashboard')
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+        setSuccessMessage("Account created successfully!");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000); // Redirect after 2 seconds
       }
     } catch (error) {
-      // Handle login error
       if (
         error.response &&
         error.response.data &&
@@ -204,6 +206,11 @@ const SignUp = () => {
                 )}
               </button>
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+              <p className="text-green-500 text-xs pb-4">{successMessage}</p>
+            )}
 
             {/* Sign Up Button */}
             <div>
