@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +20,7 @@ const SignUp = () => {
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const validateName = (name) => name.trim().length > 0;
 
+  const navigate = useNavigate()
   const handleSignUp = (e) => {
     e.preventDefault();
 
@@ -48,6 +51,36 @@ const SignUp = () => {
     setErrorConfirmPass(null);
 
     // SignUp API call
+    try {
+      const response = await axiosInstance.post("/create-account", {
+        fullName: name, 
+        email: email,
+        password: password,
+      });
+
+      // Check if response.data contains the accessToken
+      if (response.data && response.data.error) {
+        setError(response.data.message)
+        return
+      }
+
+      if(response.data&& response.data.accessToken)
+      {
+        localStorage.setItem("token", response.data.accessToken)
+        Navigate('/dashboard')
+      }
+    } catch (error) {
+      // Handle login error
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
   };
 
   return (
