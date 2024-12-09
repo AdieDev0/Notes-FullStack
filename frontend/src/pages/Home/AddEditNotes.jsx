@@ -8,11 +8,14 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
   const [tags, setTags] = useState(noteData?.tags || []);
   const [error, setError] = useState(null);
 
-  // Placeholder functions for adding and editing notes
+  // ADD NOTE
   const addNewNote = async () => {
     console.log("New note added:", { title, content, tags });
   };
 
+
+
+  // Edit Note
   const editNote = async () => {
     console.log("Note edited:", { title, content, tags });
   };
