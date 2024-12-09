@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import moment from "moment";
 
-// Set app element for accessibility
+// Set Modal's app element for accessibility
 Modal.setAppElement("#root");
 
 const Home = () => {
@@ -19,48 +19,45 @@ const Home = () => {
   });
 
   const [userInfo, setUserInfo] = useState(null); // Store user info
+  const [allNotes, setAllNotes] = useState([]); // Store notes
   const navigate = useNavigate();
 
-  // GET USER INFO
+  // Fetch user info
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
-      if (response.data && response.data.user) {
-        setUserInfo(response.data.user); // Update state with user info
+      if (response.data?.user) {
+        setUserInfo(response.data.user);
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response.status === 401) {
-          // Handle unauthorized access
-          localStorage.clear(); // Clear localStorage
-          navigate("/login"); // Redirect to login
-        } else {
-          console.error("API Error:", error.response.data); // Log other API errors
-        }
+      if (error.response?.status === 401) {
+        localStorage.clear(); // Clear local storage
+        navigate("/login"); // Redirect to login
       } else {
-        console.error("Network or unexpected error:", error.message); // Handle network errors
+        console.error("API Error:", error.response?.data || error.message);
       }
     }
   };
 
-  // GET ALL NOTES
+  // Fetch all notes
   const getAllNotes = async () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
-
-      if (response.data && response.data.notes) {
-        setAllNotes(response.data.notes); // Corrected this line
+      if (response.data?.notes) {
+        setAllNotes(response.data.notes);
       }
     } catch (error) {
-      console.log("An unexpected error occurred. Please try again."); // Corrected typo in 'Please'
+      console.error("Error fetching notes:", error.message);
     }
   };
 
+  // Effect to fetch data on component mount
   useEffect(() => {
+    getUserInfo();
     getAllNotes();
-    getUserInfo(); // Fetch user info on component mount
-  }, []); // Run only once on mount
+  }, []);
 
+  // Modal styles
   const customModalStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -70,20 +67,21 @@ const Home = () => {
   return (
     <>
       <Navbar />
+
+      {/* Notes List */}
       <div className="container mx-auto px-4 py-6">
-        {/* Replace NoteCard with dynamic data when ready */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allNotes.map((item, index) => (
+          {allNotes.map((item) => (
             <NoteCard
-              key={item._id} // Ensure this is unique
+              key={item._id}
               title={item.title}
-              date={moment(item.date).format("MMM DD, YYYY")} // Format the date using Moment.js
+              date={moment(item.date, "MMM DD, YYYY").format("MMM DD, YYYY")} // Add custom parsing here
               content={item.content}
               tags={item.tags}
               isPinned={item.isPinned}
-              onEdit={() => handleEdit(item._id)} // Replace with actual edit function
-              onDelete={() => handleDelete(item._id)} // Replace with actual delete function
-              onPinNote={() => handlePin(item._id)} // Replace with actual pin function
+              onEdit={() => handleEdit(item._id)}
+              onDelete={() => handleDelete(item._id)}
+              onPinNote={() => handlePin(item._id)}
             />
           ))}
         </div>
@@ -100,7 +98,7 @@ const Home = () => {
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
 
-      {/* Modal Component */}
+      {/* Modal for Adding/Editing Notes */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() =>
@@ -113,14 +111,14 @@ const Home = () => {
         className="w-full max-w-lg bg-white rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
       >
         {/* Close Modal Button */}
-        <div
+        <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
           onClick={() =>
             setOpenAddEditModal((prev) => ({ ...prev, isShown: false }))
           }
         >
           &times;
-        </div>
+        </button>
 
         {/* Add/Edit Notes Component */}
         <AddEditNotes

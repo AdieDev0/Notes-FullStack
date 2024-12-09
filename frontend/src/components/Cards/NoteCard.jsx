@@ -34,7 +34,7 @@ const NoteCard = ({
         {content?.slice(0, 60)}...
       </p>
       <div className="flex items-center justify-between mt-4">
-        <div className="text-sm font-medium text-blue-500">{tags}</div>
+        <div className="text-sm font-medium text-blue-500">{tags.map ((item) => `#${item}` )}</div>
 
         <div className="flex space-x-4">
           <IoCreateOutline
