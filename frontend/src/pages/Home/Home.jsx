@@ -7,10 +7,8 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import moment from "moment";
-import Toast from "../../components/ToastMessage/Toast";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Set Modal's app element for accessibility
 Modal.setAppElement("#root");
@@ -34,7 +32,9 @@ const Home = () => {
     try {
       await axiosInstance.delete(`/delete-note/${noteId}`);
       toast.success("Note successfully deleted!"); // Show success toast
-      setAllNotes((prevNotes) => prevNotes.filter((note) => note._id !== noteId)); // Update UI
+      setAllNotes((prevNotes) =>
+        prevNotes.filter((note) => note._id !== noteId)
+      ); // Update UI
     } catch (error) {
       console.error("Error deleting note:", error.message);
       toast.error("Failed to delete the note. Please try again."); // Show error toast
