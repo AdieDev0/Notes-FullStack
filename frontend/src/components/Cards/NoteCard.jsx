@@ -2,6 +2,7 @@ import React from "react";
 import { BsPin } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import moment from "moment";
 
 const NoteCard = ({
   title,
@@ -18,7 +19,9 @@ const NoteCard = ({
       <div className="flex items-center justify-between">
         <div>
           <h6 className="text-base font-semibold text-gray-700">{title}</h6>
-          <span className="text-sm text-gray-400">{date}</span>
+          <span className="text-sm text-gray-400">
+            {moment(date).format("MMM DD, YYYY")}
+          </span>
         </div>
         <BsPin
           className={`text-xl cursor-pointer transition-colors ${

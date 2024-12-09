@@ -6,6 +6,7 @@ import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import moment from "moment";
 
 // Set app element for accessibility
 Modal.setAppElement("#root");
@@ -42,7 +43,21 @@ const Home = () => {
     }
   };
 
+  // GET ALL NOTES
+  const getAllNotes = async () => {
+    try {
+      const response = await axiosInstance.get("/get-all-notes");
+
+      if (response.data && response.data.notes) {
+        setAllNotes(response.data.notes); // Corrected this line
+      }
+    } catch (error) {
+      console.log("An unexpected error occurred. Please try again."); // Corrected typo in 'Please'
+    }
+  };
+
   useEffect(() => {
+    getAllNotes();
     getUserInfo(); // Fetch user info on component mount
   }, []); // Run only once on mount
 
@@ -58,16 +73,19 @@ const Home = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Replace NoteCard with dynamic data when ready */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <NoteCard
-            title="Meeting on 21st December"
-            date="2nd Dec 2024"
-            content="Meeting on 21st December Meeting on 21st December"
-            tags="#Meeting"
-            isPinned={true}
-            onEdit={() => console.log("Edit Note clicked")}
-            onDelete={() => console.log("Delete Note clicked")}
-            onPinNote={() => console.log("Pin Note clicked")}
-          />
+          {allNotes.map((item, index) => (
+            <NoteCard
+              key={item._id} // Ensure this is unique
+              title={item.title}
+              date={moment(item.date).format("MMM DD, YYYY")} // Format the date using Moment.js
+              content={item.content}
+              tags={item.tags}
+              isPinned={item.isPinned}
+              onEdit={() => handleEdit(item._id)} // Replace with actual edit function
+              onDelete={() => handleDelete(item._id)} // Replace with actual delete function
+              onPinNote={() => handlePin(item._id)} // Replace with actual pin function
+            />
+          ))}
         </div>
       </div>
 
