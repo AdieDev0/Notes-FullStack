@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import TagInput from "../../components/Input/TagInput";
 import { MdClose } from "react-icons/md";
 import axiosInstance from "../../utils/axiosInstance";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   const [title, setTitle] = useState(noteData?.title || "");
@@ -64,21 +66,25 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   // Handle Add/Edit Note Action
   const handleAddNote = () => {
     setError(""); // Reset error message
-
+  
     if (!title.trim()) {
       setError("Please enter the title.");
+      toast.error("Title is required!"); // Display an error toast
       return;
     }
-
+  
     if (!content.trim()) {
       setError("Please enter the content.");
+      toast.error("Content is required!"); // Display an error toast
       return;
     }
-
+  
     if (type === "edit") {
       editNote();
+      toast.success("Note successfully edited!"); // Success toast for edit
     } else {
       addNewNote();
+      toast.success("Note successfully added!"); // Success toast for add
     }
   };
 
