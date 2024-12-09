@@ -15,7 +15,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
 
 
 
-  // Edit Note
+  // EDIT NOTE
   const editNote = async () => {
     console.log("Note edited:", { title, content, tags });
   };
