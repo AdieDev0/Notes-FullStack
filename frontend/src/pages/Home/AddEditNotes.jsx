@@ -3,58 +3,75 @@ import TagInput from "../../components/Input/TagInput";
 import { MdClose } from "react-icons/md";
 import axiosInstance from "../../utils/axiosInstance";
 
-const AddEditNotes = ({ noteData, type, onClose }) => {
+const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   const [title, setTitle] = useState(noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags || []);
   const [error, setError] = useState(null);
 
   // ADD NOTE
-  const addNewNote = async ({noteData, type, getAllNotes, onClose }) => {
-    try{
-      const response = await axiosInstance.post("/add-note",
-      {
+  const addNewNote = async () => {
+    try {
+      const response = await axiosInstance.post("/add-note", {
         title,
         content,
         tags,
       });
 
-      if(response.data && response.data.note){
-        getAllNotes()
-        onClose()
+      if (response.data && response.data.note) {
+        getAllNotes(); // Refresh notes
+        onClose(); // Close the modal
       }
-
-    } catch( error){
-      if(
+    } catch (error) {
+      if (
         error.response &&
         error.response.data &&
         error.response.data.message
       ) {
         setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
       }
-       
-      
-     
     }
   };
-
-
 
   // EDIT NOTE
   const editNote = async () => {
-    console.log("Note edited:", { title, content, tags });
+    try {
+      const response = await axiosInstance.put(`/edit-note/${noteData._id}`, {
+        title,
+        content,
+        tags,
+      });
+
+      if (response.data && response.data.note) {
+        getAllNotes(); // Refresh notes
+        onClose(); // Close the modal
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
   };
 
+  // Handle Add/Edit Note Action
   const handleAddNote = () => {
-    setError("");
+    setError(""); // Reset error message
 
-    if (!title) {
-      setError("Please enter the title");
+    if (!title.trim()) {
+      setError("Please enter the title.");
       return;
     }
 
-    if (!content) {
-      setError("Please enter the content");
+    if (!content.trim()) {
+      setError("Please enter the content.");
       return;
     }
 
@@ -63,12 +80,11 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
     } else {
       addNewNote();
     }
-
-    onClose(); // Close the modal after action
   };
 
   return (
     <div className="p-4 relative">
+      {/* Close Modal Button */}
       <button
         onClick={onClose}
         className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-50"
@@ -77,6 +93,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         <MdClose className="text-xl text-slate-400" />
       </button>
 
+      {/* Title Input */}
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-title"
@@ -94,6 +111,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         />
       </div>
 
+      {/* Content Input */}
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-content"
@@ -111,6 +129,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         ></textarea>
       </div>
 
+      {/* Tags Input */}
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-tags"
@@ -121,8 +140,10 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         <TagInput tags={tags} setTags={setTags} />
       </div>
 
+      {/* Error Message */}
       {error && <p className="text-red-500 text-xs pt-4">{error}</p>}
 
+      {/* Add/Edit Note Button */}
       <button
         aria-label={type === "edit" ? "Edit Note" : "Add Note"}
         className="w-full bg-blue-500 text-white font-medium text-sm py-3 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all"
