@@ -9,6 +9,8 @@ import axiosInstance from "../../utils/axiosInstance";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EmptyCard from "../../components/EmptyCards/EmptyCard";
+import AddNotesSvg from "../../assets/man-holding-note.json";
 
 // Set Modal's app element for accessibility
 Modal.setAppElement("#root");
@@ -28,7 +30,6 @@ const Home = () => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
-
   // DELETE NOTE
   const handleDelete = async (noteId) => {
     try {
@@ -40,6 +41,18 @@ const Home = () => {
     } catch (error) {
       console.error("Error deleting note:", error.message);
       toast.error("Failed to delete the note. Please try again."); // Show error toast
+    }
+  };
+
+  // PIN NOTE
+  const handlePin = async (noteId) => {
+    try {
+      await axiosInstance.put(`/pin-note/${noteId}`);
+      toast.success("Note pinned successfully!");
+      getAllNotes(); // Refresh notes list
+    } catch (error) {
+      console.error("Error pinning note:", error.message);
+      toast.error("Failed to pin the note. Please try again.");
     }
   };
 
@@ -56,6 +69,7 @@ const Home = () => {
         navigate("/login"); // Redirect to login
       } else {
         console.error("API Error:", error.response?.data || error.message);
+        toast.error("Failed to fetch user info.");
       }
     }
   };
@@ -69,6 +83,7 @@ const Home = () => {
       }
     } catch (error) {
       console.error("Error fetching notes:", error.message);
+      toast.error("Failed to fetch notes.");
     }
   };
 
@@ -90,21 +105,28 @@ const Home = () => {
 
       {/* Notes List */}
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allNotes.map((item) => (
-            <NoteCard
-              key={item._id}
-              title={item.title}
-              date={moment(item.date, "MMM DD, YYYY").format("MMM DD, YYYY")}
-              content={item.content}
-              tags={item.tags}
-              isPinned={item.isPinned}
-              onEdit={() => handleEdit(item)}
-              onDelete={() => handleDelete(item._id)} // Pass handleDelete
-              onPinNote={() => handlePin(item._id)}
-            />
-          ))}
-        </div>
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allNotes.map((item) => (
+              <NoteCard
+                key={item._id}
+                title={item.title}
+                date={moment(item.date, "MMM DD, YYYY").format("MMM DD, YYYY")}
+                content={item.content}
+                tags={item.tags}
+                isPinned={item.isPinned}
+                onEdit={() => handleEdit(item)}
+                onDelete={() => handleDelete(item._id)}
+                onPinNote={() => handlePin(item._id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyCard
+            animation={AddNotesSvg} // Pass Lottie animation data here
+            message={`Start creating your first note! Click the 'Add' button to note down your thoughts, ideas, and reminders. Let's get started!`}
+          />
+        )}
       </div>
 
       {/* Floating Action Button */}
