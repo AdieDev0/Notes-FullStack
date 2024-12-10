@@ -459,10 +459,19 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
 });
 
 // SEARCH API
-app.get("/search-notes", authenticateToken, async (req, res) => {
-  const user = req.user; // Get the user object from the authenticated token
-  const { query } = req.query; // Get the search query from the request
+app.get("/search-note", authenticateToken, async (req, res) => {
+  const user = req.user;
+  const { query } = req.query;
 
+  // Validate the authenticated user
+  if (!user || !user.userId) {
+    return res.status(401).json({
+      error: true,
+      message: "Unauthorized access",
+    });
+  }
+
+  // Validate the search query
   if (!query) {
     return res.status(400).json({
       error: true,
@@ -471,16 +480,16 @@ app.get("/search-notes", authenticateToken, async (req, res) => {
   }
 
   try {
-    // Search for notes matching the query
+    // Search for notes that match the query for the authenticated user
     const matchingNotes = await Note.find({
-      userId: user._id,
+      userId: user.userId,
       $or: [
-        { title: { $regex: new RegExp(query, "i") } },
-        { content: { $regex: new RegExp(query, "i") } },
+        { title: { $regex: new RegExp(query, "i") } }, // Case-insensitive search on title
+        { content: { $regex: new RegExp(query, "i") } }, // Case-insensitive search on content
       ],
     });
 
-    if (matchingNotes.length === 0) {
+    if (!matchingNotes.length) {
       return res.status(404).json({
         error: true,
         message: "No matching notes found",
@@ -490,6 +499,7 @@ app.get("/search-notes", authenticateToken, async (req, res) => {
     return res.status(200).json({
       error: false,
       notes: matchingNotes,
+      message: "Matching notes retrieved successfully",
     });
   } catch (error) {
     console.error("Error searching notes:", error);
@@ -501,9 +511,10 @@ app.get("/search-notes", authenticateToken, async (req, res) => {
 });
 
 
-const PORT = 8001;
+const PORT = process.env.PORT || 8001;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
 
 module.exports = app;
