@@ -28,6 +28,8 @@ const Home = () => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
+
+  // DELETE NOTE
   const handleDelete = async (noteId) => {
     try {
       await axiosInstance.delete(`/delete-note/${noteId}`);
