@@ -26,6 +26,9 @@ const Home = () => {
   const [allNotes, setAllNotes] = useState([]); // Store notes
   const navigate = useNavigate();
 
+  // SEARCH
+  const [isSearch, setIsSearch] = useState(false);
+
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
@@ -87,10 +90,36 @@ const Home = () => {
     }
   };
 
+  // Search for a note
+  const onSearchNote = async (query) => {
+    if (!query || query.trim() === "") {
+      console.warn("Search query is required and cannot be empty.");
+      return;
+    }
+  
+    try {
+      const response = await axiosInstance.get("/search-note", {
+        params: { query },
+      });
+  
+      if (response.data && response.data.notes) {
+        setIsSearch(true);
+        setAllNotes(response.data.notes);
+      } else {
+        setIsSearch(false);
+        setAllNotes([]);
+        console.warn("No matching notes found.");
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error.response?.data?.message || error.message);
+    }
+  };
+  
   useEffect(() => {
     getUserInfo();
     getAllNotes();
   }, []);
+  
 
   // Modal styles
   const customModalStyles = {
@@ -101,7 +130,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar userInfo={userInfo} onSearchNote={onSearchNote}/>
 
       {/* Notes List */}
       <div className="container mx-auto px-4 py-6">
