@@ -459,8 +459,9 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
 });
 
 // SEARCH API
-app.get("/search-note/", authenticateToken, async (req, res) => {
-  const { query } = req.query;
+app.get("/search-notes", authenticateToken, async (req, res) => {
+  const user = req.user; // Get the user object from the authenticated token
+  const { query } = req.query; // Get the search query from the request
 
   if (!query) {
     return res.status(400).json({
@@ -470,9 +471,7 @@ app.get("/search-note/", authenticateToken, async (req, res) => {
   }
 
   try {
-    // Accessing user directly from req.user (after authentication)
-    const user = req.user;
-
+    // Search for notes matching the query
     const matchingNotes = await Note.find({
       userId: user._id,
       $or: [
@@ -500,6 +499,7 @@ app.get("/search-note/", authenticateToken, async (req, res) => {
     });
   }
 });
+
 
 const PORT = 8001;
 app.listen(PORT, () => {
