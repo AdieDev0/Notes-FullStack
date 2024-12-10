@@ -458,6 +458,49 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
   }
 });
 
+// SEARCH API
+app.get("/search-note/", authenticateToken, async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({
+      error: true,
+      message: "Search query is required",
+    });
+  }
+
+  try {
+    // Accessing user directly from req.user (after authentication)
+    const user = req.user;
+
+    const matchingNotes = await Note.find({
+      userId: user._id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } },
+      ],
+    });
+
+    if (matchingNotes.length === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "No matching notes found",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      notes: matchingNotes,
+    });
+  } catch (error) {
+    console.error("Error searching notes:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 const PORT = 8001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
