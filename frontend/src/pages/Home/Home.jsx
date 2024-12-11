@@ -54,11 +54,13 @@ const Home = () => {
 
       if (response.data && response.data.note) {
         setAllNotes((prevNotes) =>
-          prevNotes.map((note) =>
-            note._id === noteId
-              ? { ...note, isPinned: !currentPinnedState }
-              : note
-          )
+          prevNotes
+            .map((note) =>
+              note._id === noteId
+                ? { ...note, isPinned: !currentPinnedState }
+                : note
+            )
+            .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)) // Sort pinned notes to the top
         );
         toast.success(
           currentPinnedState
@@ -93,7 +95,7 @@ const Home = () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
       if (response.data?.notes) {
-        setAllNotes(response.data.notes);
+        setAllNotes(response.data.notes.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)));
         setNoResultsFound(false);
       }
     } catch (error) {
@@ -115,7 +117,7 @@ const Home = () => {
       if (response.data && response.data.notes.length > 0) {
         setIsSearch(true);
         setNoResultsFound(false);
-        setAllNotes(response.data.notes);
+        setAllNotes(response.data.notes.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)));
       } else {
         setIsSearch(true);
         setNoResultsFound(true);
