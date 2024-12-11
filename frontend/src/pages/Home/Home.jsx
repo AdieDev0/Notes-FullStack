@@ -9,8 +9,9 @@ import axiosInstance from "../../utils/axiosInstance";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import EmptyCard from "../../components/EmptyCards/EmptyCard";
-import AddNotesSvg from "../../assets/man-holding-note.json";
+import EmptyCard from "../../components/EmptyCards/EmptyCard"; // For "No Notes Found" display
+import AddNotesSvg from "../../assets/man-holding-note.json"; // Animation for "No Notes Found"
+import { debounce } from "lodash";
 
 // Set Modal's app element for accessibility
 Modal.setAppElement("#root");
@@ -24,30 +25,28 @@ const Home = () => {
 
   const [userInfo, setUserInfo] = useState(null); // Store user info
   const [allNotes, setAllNotes] = useState([]); // Store notes
-  const navigate = useNavigate();
+  const [isSearch, setIsSearch] = useState(false); // Indicates if search mode is active
+  const [noResultsFound, setNoResultsFound] = useState(false); // Added state to track no search results
 
-  // SEARCH
-  const [isSearch, setIsSearch] = useState(false);
+  const navigate = useNavigate();
 
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
-  // DELETE NOTE
   const handleDelete = async (noteId) => {
     try {
       await axiosInstance.delete(`/delete-note/${noteId}`);
-      toast.success("Note successfully deleted!"); // Show success toast
+      toast.success("Note successfully deleted!");
       setAllNotes((prevNotes) =>
         prevNotes.filter((note) => note._id !== noteId)
-      ); // Update UI
+      );
     } catch (error) {
       console.error("Error deleting note:", error.message);
-      toast.error("Failed to delete the note. Please try again."); // Show error toast
+      toast.error("Failed to delete the note. Please try again.");
     }
   };
 
-  // PIN NOTE
   const handlePin = async (noteId) => {
     try {
       await axiosInstance.put(`/pin-note/${noteId}`);
@@ -59,7 +58,6 @@ const Home = () => {
     }
   };
 
-  // Fetch user info
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
@@ -68,8 +66,8 @@ const Home = () => {
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        localStorage.clear(); // Clear local storage
-        navigate("/login"); // Redirect to login
+        localStorage.clear();
+        navigate("/login");
       } else {
         console.error("API Error:", error.response?.data || error.message);
         toast.error("Failed to fetch user info.");
@@ -77,12 +75,12 @@ const Home = () => {
     }
   };
 
-  // Fetch all notes
   const getAllNotes = async () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
       if (response.data?.notes) {
         setAllNotes(response.data.notes);
+        setNoResultsFound(false); // Reset no results when fetching all notes
       }
     } catch (error) {
       console.error("Error fetching notes:", error.message);
@@ -90,38 +88,41 @@ const Home = () => {
     }
   };
 
-  // Search for a note
-  const onSearchNote = async (query) => {
+  // SEARCH FUNCTION
+  const onSearchNote = debounce(async (query) => {
     if (!query || query.trim() === "") {
-      console.warn("Search query is required and cannot be empty.");
       return;
     }
-  
+
     try {
       const response = await axiosInstance.get("/search-note", {
         params: { query },
       });
-  
-      if (response.data && response.data.notes) {
+
+      if (response.data && response.data.notes.length > 0) {
         setIsSearch(true);
+        setNoResultsFound(false); // Set noResultsFound to false if results are found
         setAllNotes(response.data.notes);
       } else {
-        setIsSearch(false);
-        setAllNotes([]);
-        console.warn("No matching notes found.");
+        setIsSearch(true);
+        setNoResultsFound(true); // No results found
+        setAllNotes([]); // Clear notes list
       }
     } catch (error) {
-      console.error("Error fetching search results:", error.response?.data?.message || error.message);
+      console.error(
+        // EDIITTTT
+        "Error fetching search results:",
+        error.response?.data?.message || error.message
+      );
+      toast.error("Failed to fetch search results.");
     }
-  };
-  
+  }, 300);
+
   useEffect(() => {
     getUserInfo();
     getAllNotes();
   }, []);
-  
 
-  // Modal styles
   const customModalStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -130,17 +131,22 @@ const Home = () => {
 
   return (
     <>
-      <Navbar userInfo={userInfo} onSearchNote={onSearchNote}/>
+      <Navbar userInfo={userInfo} onSearchNote={onSearchNote} />
 
-      {/* Notes List */}
       <div className="container mx-auto px-4 py-6">
-        {allNotes.length > 0 ? (
+        {/* Updated conditional rendering to show EmptyCard if no results are found */}
+        {noResultsFound ? (
+          <EmptyCard
+            animation={AddNotesSvg}
+            message="No matching notes found. Try searching with different keywords."
+          />
+        ) : allNotes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {allNotes.map((item) => (
               <NoteCard
                 key={item._id}
                 title={item.title}
-                date={moment(item.date, "MMM DD, YYYY").format("MMM DD, YYYY")}
+                date={moment(item.date).format("MMM DD, YYYY")}
                 content={item.content}
                 tags={item.tags}
                 isPinned={item.isPinned}
@@ -152,13 +158,12 @@ const Home = () => {
           </div>
         ) : (
           <EmptyCard
-            animation={AddNotesSvg} // Pass Lottie animation data here
-            message={`Start creating your first note! Click the 'Add' button to note down your thoughts, ideas, and reminders. Let's get started!`}
+            animation={AddNotesSvg}
+            message="Start creating your first note! Click the 'Add' button to note down your thoughts, ideas, and reminders. Let's get started!"
           />
         )}
       </div>
 
-      {/* Floating Action Button */}
       <button
         className="w-16 h-16 flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 fixed right-6 bottom-6 rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         aria-label="Add Note"
@@ -169,7 +174,6 @@ const Home = () => {
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
 
-      {/* Modal for Adding/Editing Notes */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() =>
@@ -181,7 +185,6 @@ const Home = () => {
         }
         className="w-full max-w-lg bg-white rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
       >
-        {/* Close Modal Button */}
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
           onClick={() =>
@@ -191,7 +194,6 @@ const Home = () => {
           &times;
         </button>
 
-        {/* Add/Edit Notes Component */}
         <AddEditNotes
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}

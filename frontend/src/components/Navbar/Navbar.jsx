@@ -1,46 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import PropTypes from "prop-types"; // For prop type validation
 import ProfileInfo from "../Cards/ProfileInfo";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
+import _ from "lodash"; // Import lodash for debouncing
 
-const Navbar = ({ userInfo, onSearchNote }) => {
+const Navbar = ({ userInfo = {}, onSearchNote }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // Fixed assignment
-
-  const onLogout = () => {
+  // Logout handler
+  const handleLogout = () => {
     localStorage.clear();
-    navigate("/Login");
+    navigate("/login");
   };
 
-  const handleSearch = () => {
-    if(searchQuery){
-      onSearchNote(searchQuery)
-    }
+  // Debounced search function to improve performance
+  const debouncedSearch = useCallback(
+    _.debounce((query) => {
+      if (query.trim()) {
+        onSearchNote(query);
+      }
+    }, 300),
+    [onSearchNote]
+  );
+
+  // Search input change handler
+  const handleSearchInputChange = ({ target }) => {
+    setSearchQuery(target.value);
+    debouncedSearch(target.value);
   };
 
-  const onClearSearch = () => {
+  // Clear search input
+  const clearSearchInput = () => {
     setSearchQuery("");
+    onSearchNote(""); // Reset search results
   };
 
   return (
-    <div className="bg-white flex items-center justify-between px-6 py-2 drop-shadow z-50 top-0 sticky">
+    <div className="bg-white flex items-center justify-between px-6 py-2 shadow-md z-50 sticky top-0">
+      {/* App Name */}
       <h2 className="font-Parkinsans font-bold text-xl text-black py-2">
         OpenNotes
       </h2>
 
+      {/* Search Bar */}
       <SearchBar
         value={searchQuery}
-        onChange={({ target }) => {
-          setSearchQuery(target.value);
-        }}
-        handleSearch={handleSearch}
-        onClearSearch={onClearSearch}
+        onChange={handleSearchInputChange}
+        handleSearch={() => debouncedSearch(searchQuery)}
+        onClearSearch={clearSearchInput}
       />
 
-      <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
+      {/* Profile Information */}
+      <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
     </div>
   );
+};
+
+// Prop Types for validation
+Navbar.propTypes = {
+  userInfo: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string,
+    avatar: PropTypes.string,
+  }),
+  onSearchNote: PropTypes.func.isRequired,
 };
 
 export default Navbar;
