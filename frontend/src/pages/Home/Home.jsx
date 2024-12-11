@@ -9,11 +9,10 @@ import axiosInstance from "../../utils/axiosInstance";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import EmptyCard from "../../components/EmptyCards/EmptyCard"; // For "No Notes Found" display
-import AddNotesSvg from "../../assets/man-holding-note.json"; // Animation for "No Notes Found"
+import EmptyCard from "../../components/EmptyCards/EmptyCard";
+import AddNotesSvg from "../../assets/man-holding-note.json";
 import { debounce } from "lodash";
 
-// Set Modal's app element for accessibility
 Modal.setAppElement("#root");
 
 const Home = () => {
@@ -23,10 +22,10 @@ const Home = () => {
     data: null,
   });
 
-  const [userInfo, setUserInfo] = useState(null); // Store user info
-  const [allNotes, setAllNotes] = useState([]); // Store notes
-  const [isSearch, setIsSearch] = useState(false); // Indicates if search mode is active
-  const [noResultsFound, setNoResultsFound] = useState(false); // Added state to track no search results
+  const [userInfo, setUserInfo] = useState(null);
+  const [allNotes, setAllNotes] = useState([]);
+  const [isSearch, setIsSearch] = useState(false);
+  const [noResultsFound, setNoResultsFound] = useState(false);
 
   const navigate = useNavigate();
 
@@ -47,14 +46,29 @@ const Home = () => {
     }
   };
 
-  const handlePin = async (noteId) => {
+  const updateIsPinned = async (noteId, currentPinnedState) => {
     try {
-      await axiosInstance.put(`/pin-note/${noteId}`);
-      toast.success("Note pinned successfully!");
-      getAllNotes(); // Refresh notes list
+      const response = await axiosInstance.put(`/update-note-pinned/${noteId}`, {
+        isPinned: !currentPinnedState,
+      });
+
+      if (response.data && response.data.note) {
+        setAllNotes((prevNotes) =>
+          prevNotes.map((note) =>
+            note._id === noteId
+              ? { ...note, isPinned: !currentPinnedState }
+              : note
+          )
+        );
+        toast.success(
+          currentPinnedState
+            ? "Note successfully unpinned!"
+            : "Note successfully pinned!"
+        );
+      }
     } catch (error) {
-      console.error("Error pinning note:", error.message);
-      toast.error("Failed to pin the note. Please try again.");
+      console.error("Error updating pin status:", error.message);
+      toast.error("Failed to update pin status. Please try again.");
     }
   };
 
@@ -80,7 +94,7 @@ const Home = () => {
       const response = await axiosInstance.get("/get-all-notes");
       if (response.data?.notes) {
         setAllNotes(response.data.notes);
-        setNoResultsFound(false); // Reset no results when fetching all notes
+        setNoResultsFound(false);
       }
     } catch (error) {
       console.error("Error fetching notes:", error.message);
@@ -88,7 +102,6 @@ const Home = () => {
     }
   };
 
-  // SEARCH FUNCTION
   const onSearchNote = debounce(async (query) => {
     if (!query || query.trim() === "") {
       return;
@@ -101,19 +114,15 @@ const Home = () => {
 
       if (response.data && response.data.notes.length > 0) {
         setIsSearch(true);
-        setNoResultsFound(false); // Set noResultsFound to false if results are found
+        setNoResultsFound(false);
         setAllNotes(response.data.notes);
       } else {
         setIsSearch(true);
-        setNoResultsFound(true); // No results found
-        setAllNotes([]); // Clear notes list
+        setNoResultsFound(true);
+        setAllNotes([]);
       }
     } catch (error) {
-      console.error(
-        // EDIITTTT
-        "Error fetching search results:",
-        error.response?.data?.message || error.message
-      );
+      console.error("Error fetching search results:", error.response?.data?.message || error.message);
       toast.error("Failed to fetch search results.");
     }
   }, 300);
@@ -134,7 +143,6 @@ const Home = () => {
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} />
 
       <div className="container mx-auto px-4 py-6">
-        {/* Updated conditional rendering to show EmptyCard if no results are found */}
         {noResultsFound ? (
           <EmptyCard
             animation={AddNotesSvg}
@@ -152,7 +160,7 @@ const Home = () => {
                 isPinned={item.isPinned}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item._id)}
-                onPinNote={() => handlePin(item._id)}
+                onPinNote={() => updateIsPinned(item._id, item.isPinned)}
               />
             ))}
           </div>
