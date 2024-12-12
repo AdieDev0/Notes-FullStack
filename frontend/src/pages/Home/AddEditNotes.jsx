@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import TagInput from "../../components/Input/TagInput";
 import { MdClose } from "react-icons/md";
 import axiosInstance from "../../utils/axiosInstance";
-import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
-  
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   const [title, setTitle] = useState(noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
@@ -66,19 +66,19 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   // Handle Add/Edit Note Action
   const handleAddNote = () => {
     setError(""); // Reset error message
-  
+
     if (!title.trim()) {
       setError("Please enter the title.");
       toast.error("Title is required!"); // Display an error toast
       return;
     }
-  
+
     if (!content.trim()) {
       setError("Please enter the content.");
       toast.error("Content is required!"); // Display an error toast
       return;
     }
-  
+
     if (type === "edit") {
       editNote();
       toast.success("Note successfully edited!"); // Success toast for edit
@@ -89,28 +89,28 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   };
 
   return (
-    <div className="p-4 relative">
+    <div className="p-4 sm:p-6 md:p-8 relative bg-white text-black rounded-lg shadow-xl">
       {/* Close Modal Button */}
       <button
         onClick={onClose}
-        className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-50"
+        className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-4 -right-4 bg-black text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-500"
         aria-label="Close Modal"
       >
-        <MdClose className="text-xl text-slate-400" />
+        <MdClose className="text-xl" />
       </button>
 
       {/* Title Input */}
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-title"
-          className="text-sm font-semibold text-gray-600 tracking-wide"
+          className="text-sm font-Parkinsans font-semibold tracking-wide"
         >
           TITLE
         </label>
         <input
           id="note-title"
           type="text"
-          className="text-xl text-gray-800 outline-none bg-gray-50 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          className="text-lg text-black bg-gray-50 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 placeholder-gray-400"
           placeholder="Go To Gym At 5"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
@@ -121,15 +121,15 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-content"
-          className="text-sm font-semibold text-gray-600 tracking-wide"
+          className="text-sm font-semibold font-Parkinsans tracking-wide"
         >
           CONTENT
         </label>
         <textarea
           id="note-content"
-          className="text-sm text-gray-800 outline-none bg-gray-50 border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          placeholder="Content"
-          rows={10}
+          className="text-sm text-black bg-gray-50 border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 placeholder-gray-400"
+          placeholder="Write your content here..."
+          rows={6}
           value={content}
           onChange={({ target }) => setContent(target.value)}
         ></textarea>
@@ -139,11 +139,15 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       <div className="flex flex-col gap-2 mb-6">
         <label
           htmlFor="note-tags"
-          className="text-sm font-semibold text-gray-600 tracking-wide"
+          className="text-sm font-semibold font-Parkinsans tracking-wide"
         >
           TAGS
         </label>
-        <TagInput tags={tags} setTags={setTags} />
+        <TagInput
+          tags={tags}
+          setTags={setTags}
+          inputClass="bg-gray-50 border-gray-300 text-black"
+        />
       </div>
 
       {/* Error Message */}
@@ -152,10 +156,10 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       {/* Add/Edit Note Button */}
       <button
         aria-label={type === "edit" ? "Edit Note" : "Add Note"}
-        className="w-full bg-blue-500 text-white font-medium text-sm py-3 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all"
+        className="w-full bg-black text-white font-Parkinsans font-medium text-sm py-3 rounded-md shadow-lg hover:bg-gray-800 hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
         onClick={handleAddNote}
       >
-        {type === "edit" ? "EDIT" : "ADD"}
+        {type === "edit" ? "EDIT NOTE" : "ADD NOTE"}
       </button>
     </div>
   );
