@@ -68,8 +68,7 @@ const Login = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="relative flex flex-col justify-center h-[600px] bg-gray-50 overflow-hidden">
+      <div className="relative flex flex-col justify-center h-screen bg-gray-50 overflow-hidden">
         <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg ring-2 ring-slate-900">
           <h1 className="text-3xl font-bold text-center text-slate-900">
             Login
