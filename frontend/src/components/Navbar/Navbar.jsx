@@ -4,6 +4,8 @@ import ProfileInfo from "../Cards/ProfileInfo";
 import { NavLink, useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
 import _ from "lodash"; // Import lodash for debouncing
+import Lottie from "lottie-react";
+import Notes from "../../assets/Notes.json";
 
 const Navbar = ({ userInfo = {}, onSearchNote }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,11 +42,18 @@ const Navbar = ({ userInfo = {}, onSearchNote }) => {
   return (
     <>
       {/* LARGE SCREEN */}
-      <div className="bg-white hidden md:flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 py-4 shadow-md z-50 sticky top-0">
+      <div className="bg-white hidden md:flex flex-col md:flex-row items-center justify-between px-7 sm:px-12 py-4 shadow-md z-50 sticky top-0">
         {/* App Name */}
-        <h2 className="font-Parkinsans font-bold text-2xl text-black cursor-pointer">
-          OpenNotes
-        </h2>
+        <div className="flex items-center">
+          <Lottie
+            animationData={Notes}
+            loop={true}
+            className="size-20 cursor-pointer"
+          />
+          <h2 className="font-Parkinsans font-bold text-2xl text-black cursor-pointer">
+            OpenNotes
+          </h2>
+        </div>
 
         {/* Search Bar */}
         <div className="w-full sm:w-auto mt-3 sm:mt-0 flex-1 sm:flex-none sm:px-4">
@@ -66,9 +75,16 @@ const Navbar = ({ userInfo = {}, onSearchNote }) => {
       <div className="bg-white items-center justify-between shadow-md z-50 sticky top-0 lg:hidden p-4">
         <div className="flex items-center justify-between">
           {/* App Name */}
-          <h2 className="font-Parkinsans font-bold text-2xl text-black">
-            OpenNotes
-          </h2>
+          <div className="flex items-center">
+            <Lottie
+              animationData={Notes}
+              loop={true}
+              className="size-14 cursor-pointer"
+            />
+            <h2 className="font-Parkinsans font-bold text-lg md:text-2xl text-black cursor-pointer">
+              OpenNotes
+            </h2>
+          </div>
 
           {/* Profile Information */}
           <div className="mt-2 sm:mt-0">
