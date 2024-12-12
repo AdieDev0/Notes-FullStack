@@ -140,7 +140,6 @@ const Home = () => {
         "Error fetching search results:",
         error.response?.data?.message || error.message
       );
-      toast.error("Failed to fetch search results.");
     }
   }, 300);
 

@@ -89,7 +89,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
   };
 
   return (
-    <div className="relative bg-white text-black rounded-lg p-4 sm:p-8 lg:p-6">
+    <div className="relative bg-black text-black rounded-lg p-4 sm:p-8 lg:p-6 mt-16 md:mt-0 lg:mt-0">
       {/* Close Modal Button */}
       <button
         onClick={onClose}
