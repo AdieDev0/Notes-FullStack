@@ -33,15 +33,15 @@ const TagInput = ({ tags, setTags }) => {
           {tags.map((tag, index) => (
             <div
               key={index}
-              className="flex items-center gap-1 bg-gray-200 text-gray-700 px-3 py-1 rounded-full shadow-sm"
+              className="flex items-center gap-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-full shadow-sm"
             >
               <span>{tag}</span>
               <button
                 onClick={() => handleRemoveTag(tag)}
-                className="flex items-center justify-center text-red-500 hover:text-red-700"
+                className="flex items-center justify-center text-red-500 hover:text-red-700 focus:outline-none"
                 aria-label={`Remove tag ${tag}`}
               >
-                <MdClose />
+                <MdClose className="text-lg" />
               </button>
             </div>
           ))}
@@ -52,7 +52,7 @@ const TagInput = ({ tags, setTags }) => {
         <input
           type="text"
           placeholder="Add a tag"
-          className="flex-grow text-sm bg-transparent border border-gray-300 px-3 py-2 rounded outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-grow text-sm bg-transparent border-black border-2 px-3 py-2 rounded-md outline-none"
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
@@ -60,10 +60,10 @@ const TagInput = ({ tags, setTags }) => {
         />
         <button
           onClick={addNewTag}
-          className="w-8 h-8 flex items-center justify-center rounded border border-blue-700 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400"
+          className="w-8 h-8 flex items-center justify-center rounded-md border border-black hover:bg-black hover:text-white focus:outline-none transition-colors duration-300"
           aria-label="Add Tag"
         >
-          <MdAdd className="text-2xl text-blue-700 hover:text-white" />
+          <MdAdd className="text-3xl text-black hover:text-white duration-300" />
         </button>
       </div>
     </div>

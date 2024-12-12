@@ -197,7 +197,8 @@ const Home = () => {
       >
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
-        
+      
+      {/* Modal */}
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() =>
