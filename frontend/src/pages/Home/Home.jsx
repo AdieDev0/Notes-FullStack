@@ -157,7 +157,6 @@ const Home = () => {
   return (
     <>
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} />
-
       <div className="container mx-auto px-10 py-6">
         {noResultsFound ? (
           <EmptyCard
