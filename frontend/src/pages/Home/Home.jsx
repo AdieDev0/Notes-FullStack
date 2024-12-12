@@ -197,7 +197,7 @@ const Home = () => {
       >
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
-      
+
       {/* Modal */}
       <Modal
         isOpen={openAddEditModal.isShown}
@@ -210,15 +210,6 @@ const Home = () => {
         }
         className="w-full max-w-lg rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
       >
-        <button
-          className="absolute top-2 right-2 font-Parkinsans text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
-          onClick={() =>
-            setOpenAddEditModal((prev) => ({ ...prev, isShown: false }))
-          }
-        >
-          &times;
-        </button>
-
         <AddEditNotes
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}
