@@ -38,27 +38,55 @@ const Navbar = ({ userInfo = {}, onSearchNote }) => {
   };
 
   return (
-    <div className="bg-white flex flex-col sm:flex-row items-center justify-between px-6 py-2 shadow-md z-50 sticky top-0">
-      {/* App Name */}
-      <h2 className="font-Parkinsans font-bold text-xl text-black py-2 sm:py-0">
-        OpenNotes
-      </h2>
+    <>
+      {/* LARGE SCREEN */}
+      <div className="bg-white hidden md:flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 py-4 shadow-md z-50 sticky top-0">
+        {/* App Name */}
+        <h2 className="font-Parkinsans font-bold text-2xl text-black">
+          OpenNotes
+        </h2>
 
-      {/* Search Bar */}
-      <div className="w-full sm:w-auto mt-2 sm:mt-0">
-        <SearchBar
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-          handleSearch={() => debouncedSearch(searchQuery)}
-          onClearSearch={clearSearchInput}
-        />
+        {/* Search Bar */}
+        <div className="w-full sm:w-auto mt-3 sm:mt-0 flex-1 sm:flex-none sm:px-4">
+          <SearchBar
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            handleSearch={() => debouncedSearch(searchQuery)}
+            onClearSearch={clearSearchInput}
+          />
+        </div>
+
+        {/* Profile Information */}
+        <div className="mt-3 sm:mt-0">
+          <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
+        </div>
       </div>
 
-      {/* Profile Information */}
-      <div className="mt-2 sm:mt-0">
-        <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
+      {/* MOBILE SCREEN */}
+      <div className="bg-white items-center justify-between shadow-md z-50 sticky top-0 lg:hidden p-4">
+        <div className="flex items-center justify-between">
+          {/* App Name */}
+          <h2 className="font-Parkinsans font-bold text-2xl text-black">
+            OpenNotes
+          </h2>
+
+          {/* Profile Information */}
+          <div className="mt-2 sm:mt-0">
+            <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="w-full mt-3 flex-1 sm:flex-none sm:px-4">
+          <SearchBar
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            handleSearch={() => debouncedSearch(searchQuery)}
+            onClearSearch={clearSearchInput}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
