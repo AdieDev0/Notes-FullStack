@@ -3,6 +3,8 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import Lottie from "lottie-react";
+import Notes from "../../assets/Notes.json";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -68,8 +70,18 @@ const Login = () => {
 
   return (
     <>
-      <div className="relative flex flex-col justify-center min-h-screen bg-gray-50 overflow-hidden">
-        <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg ring-2 ring-slate-900">
+      <div className="relative flex flex-col justify-center min-h-screen bg-gray-50 overflow-hidden pb-20 md:pb-5 mx-4 ">
+        <div className="flex items-center justify-center mb-2">
+          <Lottie
+            animationData={Notes}
+            loop={true}
+            className="size-24 cursor-pointer"
+          />
+          <h2 className="font-Parkinsans font-bold text-4xl md:text-4xl text-black cursor-pointer">
+            OpenNotes
+          </h2>
+        </div>
+        <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg border-2 border-black">
           <h1 className="text-3xl font-bold text-center font-Parkinsans text-slate-900">
             Login
           </h1>
@@ -91,7 +103,11 @@ const Login = () => {
                 placeholder="Enter your email"
                 className="block w-full px-4 py-2 mt-2 text-black bg-gray-50 border-2 border-black rounded-md font-Parkinsans"
               />
-              {error && <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {error}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -112,7 +128,9 @@ const Login = () => {
                 className="block w-full px-4 py-2 mt-2 text-black bg-gray-50 border-2 border-black rounded-md"
               />
               {errorPass && (
-                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{errorPass}</p>
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {errorPass}
+                </p>
               )}
               <button
                 type="button"

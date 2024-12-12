@@ -3,6 +3,8 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Navbar from "../../components/Navbar/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import Lottie from "lottie-react";
+import Notes from "../../assets/Notes.json";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,7 +89,17 @@ const SignUp = () => {
 
   return (
     <>
-      <div className="relative flex flex-col justify-center h-screen bg-gray-50 overflow-hidden">
+      <div className="relative flex flex-col justify-center h-screen bg-gray-50 overflow-hidden pb-20 md:pb-5 mx-4">
+        <div className="flex items-center justify-center mb-2">
+          <Lottie
+            animationData={Notes}
+            loop={true}
+            className="size-24 cursor-pointer"
+          />
+          <h2 className="font-Parkinsans font-bold text-4xl md:text-4xl text-black cursor-pointer">
+            OpenNotes
+          </h2>
+        </div>
         <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg border-2 border-black">
           <h1 className="text-3xl font-bold font-Parkinsans text-center text-black">
             Sign Up
@@ -111,7 +123,9 @@ const SignUp = () => {
                 className="block w-full px-4 py-2 mt-2 font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md  focus:outline-none"
               />
               {errorName && (
-                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{errorName}</p>
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {errorName}
+                </p>
               )}
             </div>
 
@@ -132,7 +146,11 @@ const SignUp = () => {
                 placeholder="Enter your email"
                 className="block w-full px-4 py-2 mt-2 font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md  focus:outline-none"
               />
-              {error && <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {error}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -153,7 +171,9 @@ const SignUp = () => {
                 className="block w-full px-4 py-2 mt-2 font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md  focus:outline-none"
               />
               {errorPass && (
-                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{errorPass}</p>
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {errorPass}
+                </p>
               )}
               <button
                 type="button"
@@ -187,7 +207,9 @@ const SignUp = () => {
                 className="block w-full px-4 py-2 mt-2 font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md  focus:outline-none"
               />
               {errorConfirmPass && (
-                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{errorConfirmPass}</p>
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">
+                  {errorConfirmPass}
+                </p>
               )}
               <button
                 type="button"
@@ -207,7 +229,9 @@ const SignUp = () => {
 
             {/* Success Message */}
             {successMessage && (
-              <p className="text-green-500 text-xs mt-1 pb-4 font-Parkinsans">{successMessage}</p>
+              <p className="text-green-500 text-xs mt-1 pb-4 font-Parkinsans">
+                {successMessage}
+              </p>
             )}
 
             {/* Sign Up Button */}
@@ -222,11 +246,11 @@ const SignUp = () => {
           </form>
 
           {/* Already Have an Account */}
-          <p className="mt-6 text-sm text-center text-slate-700">
+          <p className="mt-6 text-sm text-center font-Parkinsans text-slate-700">
             Already have an account?{" "}
             <NavLink
               to="/login"
-              className="font-medium text-slate-900 hover:underline focus:outline-none"
+              className="font-medium font-Parkinsans text-slate-900 hover:underline focus:outline-none"
             >
               Login
             </NavLink>
