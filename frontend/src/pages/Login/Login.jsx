@@ -70,7 +70,7 @@ const Login = () => {
     <>
       <div className="relative flex flex-col justify-center min-h-screen bg-gray-50 overflow-hidden">
         <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg ring-2 ring-slate-900">
-          <h1 className="text-3xl font-bold text-center text-slate-900">
+          <h1 className="text-3xl font-bold text-center font-Parkinsans text-slate-900">
             Login
           </h1>
           <form onSubmit={handleLogin} className="mt-6">
@@ -78,7 +78,7 @@ const Login = () => {
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-slate-900"
+                className="block text-sm font-medium font-Parkinsans text-slate-900"
               >
                 Email
               </label>
@@ -89,16 +89,16 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 aria-label="Email address"
                 placeholder="Enter your email"
-                className="block w-full px-4 py-2 mt-2 text-slate-700 bg-gray-50 border border-slate-300 rounded-md focus:border-slate-500 focus:ring-slate-500 focus:outline-none"
+                className="block w-full px-4 py-2 mt-2 text-black bg-gray-50 border-2 border-black rounded-md font-Parkinsans"
               />
-              {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+              {error && <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{error}</p>}
             </div>
 
             {/* Password Field */}
             <div className="mb-4 relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-slate-900"
+                className="block text-sm font-medium font-Parkinsans text-slate-900"
               >
                 Password
               </label>
@@ -109,14 +109,14 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="block w-full px-4 py-2 mt-2 text-slate-700 bg-gray-50 border border-slate-300 rounded-md focus:border-slate-500 focus:ring-slate-500 focus:outline-none"
+                className="block w-full px-4 py-2 mt-2 text-black bg-gray-50 border-2 border-black rounded-md"
               />
               {errorPass && (
-                <p className="text-red-500 text-xs pb-1">{errorPass}</p>
+                <p className="text-red-500 text-xs mt-1 pb-1 font-Parkinsans">{errorPass}</p>
               )}
               <button
                 type="button"
-                className="absolute inset-y-0 right-3 top-6 flex items-center text-slate-600 focus:outline-none"
+                className="absolute inset-y-0 right-3 top-6 flex items-center font-Parkinsans text-black focus:outline-none"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
@@ -132,7 +132,7 @@ const Login = () => {
             <div className="text-right mb-4">
               <a
                 href="#"
-                className="text-sm text-slate-600 hover:underline focus:outline-none"
+                className="text-sm text-black/70 font-Parkinsans hover:underline focus:outline-none"
               >
                 Forgot Password?
               </a>
@@ -142,7 +142,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 text-white bg-slate-900 rounded-md shadow hover:bg-slate-800 focus:outline-none focus:bg-slate-700 transition-all duration-300"
+                className="w-full px-4 py-2 text-white font-Parkinsans bg-black/95 rounded-md shadow hover:bg-black/80 focus:outline-none transition-all duration-300"
               >
                 Login
               </button>
@@ -150,10 +150,10 @@ const Login = () => {
           </form>
 
           {/* Sign Up */}
-          <p className="mt-6 text-sm text-center text-slate-700">
+          <p className="mt-6 text-sm text-center font-Parkinsans text-slate-700">
             Don't have an account?{" "}
             <NavLink to="/signUp">
-              <span className="font-medium text-slate-900 hover:underline focus:outline-none">
+              <span className="font-medium font-Parkinsans text-slate-900 hover:underline focus:outline-none">
                 Sign up
               </span>
             </NavLink>
