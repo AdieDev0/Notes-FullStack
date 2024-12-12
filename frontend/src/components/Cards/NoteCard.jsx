@@ -19,10 +19,10 @@ const NoteCard = ({
     <div className="border border-black/50 rounded-lg p-4 sm:p-3 md:p-5 lg:p-8 bg-gradient-to-br from-gray-50 to-white hover:shadow-2xl transition-transform transform hover:scale-105 ease-in-out">
       <div className="flex md:flex-row items-start md:items-center justify-between">
         <div className="mb-4 md:mb-0">
-          <h6 className="text-base font-semibold font-Parkinsans text-black">
+          <h6 className="text-lg font-semibold font-Parkinsans text-black">
             {title}
           </h6>
-          <span className="text-sm text-gray-500 font-Parkinsans">
+          <span className="text-xs text-gray-500 font-Parkinsans">
             {moment(date).format("MMM DD, YYYY")}
           </span>
         </div>
