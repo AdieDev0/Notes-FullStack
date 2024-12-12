@@ -4,11 +4,11 @@ import { IoClose } from "react-icons/io5";
 
 const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
   return (
-    <div className="w-80 h-10 flex items-center px-4 bg-slate-100 rounded-md">
+    <div className="w-80 h-10 flex items-center px-4 rounded-md border border-black">
       <input
         type="text"
         placeholder="Search Notes"
-        className="w-full text-xs bg-transparent py-1 outline-none"
+        className="w-full text-xs py-1 text-black placeholder-black/60 outline-none"
         value={value}
         onChange={onChange}
         aria-label="Search notes"
@@ -17,12 +17,12 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
       {value && (
         <IoClose
           onClick={onClearSearch}
-          className="text-xl text-slate-500 cursor-pointer hover:text-black mr-3"
+          className="text-xl text-black/60 cursor-pointer hover:text-black mr-3"
         />
       )}
       <HiMiniMagnifyingGlass
         onClick={handleSearch}
-        className="text-slate-400 cursor-pointer hover:text-black"
+        className=" cursor-pointer text-black/60 hover:text-black "
       />
     </div>
   );
