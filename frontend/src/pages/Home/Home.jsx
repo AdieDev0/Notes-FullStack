@@ -48,19 +48,23 @@ const Home = () => {
 
   const updateIsPinned = async (noteId, currentPinnedState) => {
     try {
-      const response = await axiosInstance.put(`/update-note-pinned/${noteId}`, {
-        isPinned: !currentPinnedState,
-      });
+      const response = await axiosInstance.put(
+        `/update-note-pinned/${noteId}`,
+        {
+          isPinned: !currentPinnedState,
+        }
+      );
 
       if (response.data && response.data.note) {
-        setAllNotes((prevNotes) =>
-          prevNotes
-            .map((note) =>
-              note._id === noteId
-                ? { ...note, isPinned: !currentPinnedState }
-                : note
-            )
-            .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)) // Sort pinned notes to the top
+        setAllNotes(
+          (prevNotes) =>
+            prevNotes
+              .map((note) =>
+                note._id === noteId
+                  ? { ...note, isPinned: !currentPinnedState }
+                  : note
+              )
+              .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)) // Sort pinned notes to the top
         );
         toast.success(
           currentPinnedState
@@ -95,7 +99,11 @@ const Home = () => {
     try {
       const response = await axiosInstance.get("/get-all-notes");
       if (response.data?.notes) {
-        setAllNotes(response.data.notes.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)));
+        setAllNotes(
+          response.data.notes.sort(
+            (a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)
+          )
+        );
         setNoResultsFound(false);
       }
     } catch (error) {
@@ -117,14 +125,21 @@ const Home = () => {
       if (response.data && response.data.notes.length > 0) {
         setIsSearch(true);
         setNoResultsFound(false);
-        setAllNotes(response.data.notes.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)));
+        setAllNotes(
+          response.data.notes.sort(
+            (a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)
+          )
+        );
       } else {
         setIsSearch(true);
         setNoResultsFound(true);
         setAllNotes([]);
       }
     } catch (error) {
-      console.error("Error fetching search results:", error.response?.data?.message || error.message);
+      console.error(
+        "Error fetching search results:",
+        error.response?.data?.message || error.message
+      );
       toast.error("Failed to fetch search results.");
     }
   }, 300);
@@ -144,7 +159,7 @@ const Home = () => {
     <>
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} />
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-10 py-6">
         {noResultsFound ? (
           <EmptyCard
             animation={AddNotesSvg}

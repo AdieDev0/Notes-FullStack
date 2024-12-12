@@ -38,22 +38,26 @@ const Navbar = ({ userInfo = {}, onSearchNote }) => {
   };
 
   return (
-    <div className="bg-white flex items-center justify-between px-6 py-2 shadow-md z-50 sticky top-0">
+    <div className="bg-white flex flex-col sm:flex-row items-center justify-between px-6 py-2 shadow-md z-50 sticky top-0">
       {/* App Name */}
-      <h2 className="font-Parkinsans font-bold text-xl text-black py-2">
+      <h2 className="font-Parkinsans font-bold text-xl text-black py-2 sm:py-0">
         OpenNotes
       </h2>
 
       {/* Search Bar */}
-      <SearchBar
-        value={searchQuery}
-        onChange={handleSearchInputChange}
-        handleSearch={() => debouncedSearch(searchQuery)}
-        onClearSearch={clearSearchInput}
-      />
+      <div className="w-full sm:w-auto mt-2 sm:mt-0">
+        <SearchBar
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          handleSearch={() => debouncedSearch(searchQuery)}
+          onClearSearch={clearSearchInput}
+        />
+      </div>
 
       {/* Profile Information */}
-      <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
+      <div className="mt-2 sm:mt-0">
+        <ProfileInfo userInfo={userInfo} onLogout={handleLogout} />
+      </div>
     </div>
   );
 };
