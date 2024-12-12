@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types"; // For prop type validation
 import ProfileInfo from "../Cards/ProfileInfo";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
 import _ from "lodash"; // Import lodash for debouncing
 
@@ -42,7 +42,7 @@ const Navbar = ({ userInfo = {}, onSearchNote }) => {
       {/* LARGE SCREEN */}
       <div className="bg-white hidden md:flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 py-4 shadow-md z-50 sticky top-0">
         {/* App Name */}
-        <h2 className="font-Parkinsans font-bold text-2xl text-black">
+        <h2 className="font-Parkinsans font-bold text-2xl text-black cursor-pointer">
           OpenNotes
         </h2>
 

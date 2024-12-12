@@ -197,7 +197,7 @@ const Home = () => {
       >
         <MdOutlineAdd className="text-4xl text-white" />
       </button>
-
+        
       <Modal
         isOpen={openAddEditModal.isShown}
         onRequestClose={() =>
@@ -207,10 +207,10 @@ const Home = () => {
         contentLabel={
           openAddEditModal.type === "add" ? "Add Note" : "Edit Note"
         }
-        className="w-full max-w-lg bg-white rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
+        className="w-full max-w-lg rounded-lg mx-auto mt-24 p-6 shadow-lg outline-none relative"
       >
         <button
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
+          className="absolute top-2 right-2 font-Parkinsans text-gray-400 hover:text-gray-600 cursor-pointer text-lg"
           onClick={() =>
             setOpenAddEditModal((prev) => ({ ...prev, isShown: false }))
           }
