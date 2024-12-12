@@ -93,7 +93,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       {/* Close Modal Button */}
       <button
         onClick={onClose}
-        className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-4 -right-4 bg-black text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-500"
+        className="w-10 h-10 rounded-full flex items-center justify-center absolute -top-4 -right-4 bg-black text-white hover:bg-stone-800"
         aria-label="Close Modal"
       >
         <MdClose className="text-xl" />
@@ -110,7 +110,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
         <input
           id="note-title"
           type="text"
-          className="text-md text-black bg-gray-50 border-2 border-black rounded-md p-2 focus:ring-2 focus:ring-black focus:border-black placeholder-black/50"
+          className="text-md text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
           placeholder="Cooking at 8:00 AM"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
@@ -127,7 +127,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
         </label>
         <textarea
           id="note-content"
-          className="text-sm text-black bg-gray-50 border-2 border-black rounded-md p-2 focus:ring-2 focus:ring-black focus:border-black placeholder-black/50"
+          className="text-sm text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
           placeholder="Write your content here..."
           rows={6}
           value={content}
@@ -151,12 +151,16 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
       </div>
 
       {/* Error Message */}
-      {error && <p className="text-red-500 text-xs pt-4">{error}</p>}
+      {error && (
+        <p className="text-red-500 text-xs pt-4 mb-1 font-Parkinsans">
+          {error}
+        </p>
+      )}
 
       {/* Add/Edit Note Button */}
       <button
         aria-label={type === "edit" ? "Edit Note" : "Add Note"}
-        className="w-full bg-black text-white font-Parkinsans font-medium text-sm py-3 rounded-md shadow-lg hover:bg-gray-800 hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
+        className="w-full bg-black text-white font-Parkinsans font-medium text-sm py-3 rounded-md shadow-lg hover:bg-black/80 hover:text-gray-100 focus:outline-none transition-all"
         onClick={handleAddNote}
       >
         {type === "edit" ? "EDIT NOTE" : "ADD NOTE"}

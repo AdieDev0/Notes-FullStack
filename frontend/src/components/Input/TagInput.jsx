@@ -48,7 +48,7 @@ const TagInput = ({ tags, setTags }) => {
         </div>
       )}
 
-      <div className="flex items-center gap-4 mt-3">
+      <div className="flex items-center gap-4 mt-1">
         <input
           type="text"
           placeholder="Add a tag"
@@ -60,7 +60,7 @@ const TagInput = ({ tags, setTags }) => {
         />
         <button
           onClick={addNewTag}
-          className="w-8 h-8 flex items-center justify-center rounded-md border border-black hover:bg-black hover:text-white focus:outline-none transition-colors duration-300"
+          className="w-8 h-8 flex items-center justify-center rounded-md border-2 border-black hover:bg-black hover:text-white focus:outline-none transition-colors duration-300"
           aria-label="Add Tag"
         >
           <MdAdd className="text-3xl text-black hover:text-white duration-300" />
