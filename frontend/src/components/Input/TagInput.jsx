@@ -52,7 +52,7 @@ const TagInput = ({ tags, setTags }) => {
         <input
           type="text"
           placeholder="Add a tag"
-          className="flex-grow text-sm bg-transparent border-black border-2 px-3 py-2 rounded-md outline-none"
+          className="flex-grow text-sm font-Parkinsans bg-transparent border-black border-2 px-3 py-2 rounded-md outline-none"
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}

@@ -110,7 +110,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
         <input
           id="note-title"
           type="text"
-          className="text-md text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
+          className="text-md font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
           placeholder="Cooking at 8:00 AM"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
@@ -127,7 +127,7 @@ const AddEditNotes = ({ noteData, type, onClose, getAllNotes }) => {
         </label>
         <textarea
           id="note-content"
-          className="text-sm text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
+          className="text-sm font-Parkinsans text-black bg-gray-50 border-2 border-black rounded-md p-2 placeholder-black/50"
           placeholder="Write your content here..."
           rows={6}
           value={content}
