@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Lottie from "lottie-react";
 import Notes from "../../assets/Notes.json";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -77,17 +78,32 @@ const Login = () => {
             loop={true}
             className="size-24 cursor-pointer"
           />
-          <h2 className="font-Parkinsans font-bold text-4xl md:text-4xl text-black cursor-pointer">
+          <motion.h2
+            className="font-Parkinsans font-bold text-4xl md:text-4xl text-black cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
             OpenNotes
-          </h2>
+          </motion.h2>
         </div>
-        <div className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg border-2 border-black">
+        <motion.div
+          className="w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg border-2 border-black"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="text-3xl font-bold text-center font-Parkinsans text-slate-900">
             Login
           </h1>
           <form onSubmit={handleLogin} className="mt-6">
             {/* Email Field */}
-            <div className="mb-4">
+            <motion.div
+              className="mb-4"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <label
                 htmlFor="email"
                 className="block text-sm font-medium font-Parkinsans text-slate-900"
@@ -108,10 +124,15 @@ const Login = () => {
                   {error}
                 </p>
               )}
-            </div>
+            </motion.div>
 
             {/* Password Field */}
-            <div className="mb-4 relative">
+            <motion.div
+              className="mb-4 relative"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <label
                 htmlFor="password"
                 className="block text-sm font-medium font-Parkinsans text-slate-900"
@@ -144,39 +165,53 @@ const Login = () => {
                   <AiFillEye className="h-5 w-5" />
                 )}
               </button>
-            </div>
+            </motion.div>
 
             {/* Forget Password */}
-            <div className="text-right mb-4">
+            <motion.div
+              className="text-right mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <a
                 href="#"
                 className="text-sm text-black/70 font-Parkinsans hover:underline focus:outline-none"
               >
                 Forgot Password?
               </a>
-            </div>
+            </motion.div>
 
             {/* Login Button */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <button
                 type="submit"
                 className="w-full px-4 py-2 text-white font-Parkinsans bg-black/95 rounded-md shadow hover:bg-black/80 focus:outline-none transition-all duration-300"
               >
                 Login
               </button>
-            </div>
+            </motion.div>
           </form>
 
           {/* Sign Up */}
-          <p className="mt-6 text-sm text-center font-Parkinsans text-slate-700">
+          <motion.p
+            className="mt-6 text-sm text-center font-Parkinsans text-slate-700"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             Don't have an account?{" "}
             <NavLink to="/signUp">
               <span className="font-medium font-Parkinsans text-slate-900 hover:underline focus:outline-none">
                 Sign up
               </span>
             </NavLink>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </>
   );
