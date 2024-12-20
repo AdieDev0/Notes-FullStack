@@ -102,23 +102,22 @@ const SignUp = () => {
         email: email,
         password: password,
       });
-
+    
       if (response.data && response.data.error) {
         toast.error(response.data.message);
         return;
       }
-
+    
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        toast.success("Account created successfully!");
+        toast.success("Account created successfully!"); // This line displays the success message
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/dashboard"); // Navigate to the dashboard after 2 seconds
         }, 2000);
       }
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message ||
-        "An unexpected error occurred. Please try again.";
+        error.response?.data?.message || "An unexpected error occurred. Please try again.";
       toast.error(errorMessage);
     }
   };
