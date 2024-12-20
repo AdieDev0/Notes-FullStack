@@ -81,51 +81,53 @@ app.get("/", (req, res) => {
 app.post("/create-account", async (req, res) => {
   const { fullName, email, password } = req.body;
 
-  // Validate input more strictly
-  if (!fullName || fullName.trim() === "") {
-    return res
-      .status(400)
-      .json({ error: true, message: "Full Name is required" });
+  // Validate input
+  if (!fullName || fullName.trim().length === 0) {
+    return res.status(400).json({
+      error: true,
+      message: "Full Name is required",
+    });
   }
 
-  if (!email || !email.includes("@")) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Valid Email is required" });
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({
+      error: true,
+      message: "A valid Email is required",
+    });
   }
 
   if (!password || password.length < 6) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Password must be at least 6 characters" });
+    return res.status(400).json({
+      error: true,
+      message: "Password must be at least 6 characters",
+    });
   }
 
   try {
-    // Check if user already exists
-    const isUser = await User.findOne({ email });
-    if (isUser) {
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(409).json({
         error: true,
-        message: "User with this email already exists",
+        message: "A user with this email already exists",
       });
     }
 
-    // Hash password
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const user = new User({
-      fullName,
-      email,
+    // Create and save the new user
+    const newUser = new User({
+      fullName: fullName.trim(),
+      email: email.toLowerCase(),
       password: hashedPassword,
     });
 
-    // Save user
-    await user.save();
+    await newUser.save();
 
-    // Generate access token
+    // Generate an access token
     const accessToken = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: newUser._id, email: newUser.email },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "10h" }
     );
@@ -138,7 +140,7 @@ app.post("/create-account", async (req, res) => {
   } catch (error) {
     console.error("Error creating account:", error);
 
-    // More detailed error handling
+    // Handle duplicate key error
     if (error.code === 11000) {
       return res.status(409).json({
         error: true,
@@ -153,6 +155,7 @@ app.post("/create-account", async (req, res) => {
     });
   }
 });
+
 
 // LOGIN
 app.post("/login", async (req, res) => {
